@@ -19,6 +19,7 @@ public class myAdapter extends ArrayAdapter {
     Object [] list;
 	int i;
 int j;
+int k;
     public myAdapter(Context _context, int resource, Object [] objects) {
 
         super(_context, resource, objects);
