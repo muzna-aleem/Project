@@ -26,6 +26,7 @@
 
 
     <dimen name="img_size">150dp</dimen>
+    <dimen name="in_list_img_size">50dip</dimen>
     <dimen name="margin">10dip</dimen>
     <dimen name="margin_top">10dip</dimen>
     <dimen name="margin_left">10dip</dimen>

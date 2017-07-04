@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/img_edit_profile_activity"
         android:text="@string/edit"
+        android:visibility="invisible"
         android:layout_marginLeft="@dimen/btn_edit_margin_left"/>
 
     <EditText
@@ -61,7 +62,8 @@
         android:gravity="top|left"
         android:layout_marginLeft="@dimen/margin"
         android:layout_marginRight="@dimen/margin"
-        android:layout_marginTop="@dimen/margin" />
+        android:layout_marginTop="@dimen/margin"
+        android:visibility="gone"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -69,6 +71,7 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/et_experience"
         android:layout_marginRight="@dimen/margin"/>
+
 </RelativeLayout>
 
 </FrameLayout>

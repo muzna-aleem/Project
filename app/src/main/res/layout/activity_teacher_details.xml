@@ -12,8 +12,8 @@
 
   <ImageView
       android:id="@+id/img_teacher_details"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_width="@dimen/img_size"
+      android:layout_height="@dimen/img_size"
       android:src="@drawable/detailpic"
       android:layout_alignParentRight="true"/>
     <LinearLayout
@@ -36,7 +36,7 @@
         android:id="@+id/tv_position_teacher_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/dummy_position"
+
         />
 
 
@@ -50,6 +50,7 @@
 
 
         <TextView
+            android:id="@+id/tv_education_teacher_details"
             android:layout_marginTop="@dimen/pic_margin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,7 +62,7 @@
             android:id="@+id/description_teacher_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dummy_description"/>
+            />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
