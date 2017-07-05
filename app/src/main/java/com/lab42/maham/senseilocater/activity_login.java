@@ -3,8 +3,8 @@ package com.lab42.maham.senseilocater;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,8 +33,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import Model.ResponseBO;
+import Model.Student;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -42,10 +55,10 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class activity_login extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
+    String abc = "";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
-    private SharedPreferences sp;
     private static final int REQUEST_READ_CONTACTS = 0;
 
     /**
@@ -61,51 +74,50 @@ public class activity_login extends AppCompatActivity implements LoaderCallbacks
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    //private AutoCompleteTextView mEmailView;
+    private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+    private String  email,password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        //mEmailView.getText();
-        populateAutoComplete();
+        mEmailView = (EditText) findViewById(R.id.email);
+        //populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        /*mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    //attemptLogin();
                     return true;
                 }
                 return false;
             }
-        });
+        });*/
 
+        email = mEmailView.getText().toString();
+        password = mPasswordView.getText().toString();
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                mAuthTask = new UserLoginTask(email, password);
+                mAuthTask.execute();
                 //attemptLogin();
-                Toast.makeText(getApplication(),mEmailView.getText(),Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplication(),mPasswordView.getText(),Toast.LENGTH_SHORT).show();
-                sp=getSharedPreferences("preferences",MODE_PRIVATE);
-                if(sp.getString("user","").equals("student"))
-                    new UserLoginTask(mEmailView.getText().toString(),mPasswordView.getText().toString()).execute();
-                else if(sp.getString("user","").equals("teacher"))
-                    new TeacherLoginTask(mEmailView.getText().toString(),mPasswordView.getText().toString()).execute();
-                int k = getIntent().getExtras().getInt("key");
+                /*int k = getIntent().getExtras().getInt("key");
                 Intent i;
                 if(k == 1)
                     i=new Intent(getApplicationContext(),NotificationActivity.class);
                 else
                     i=new Intent(getApplicationContext(),TeachersListActivity.class);
-                startActivity(i);
+                startActivity(i);*/
             }
         });
 
@@ -295,7 +307,7 @@ public class activity_login extends AppCompatActivity implements LoaderCallbacks
                 new ArrayAdapter<>(activity_login.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        //mEmailView.setAdapter(adapter);
     }
 
 
@@ -313,9 +325,9 @@ public class activity_login extends AppCompatActivity implements LoaderCallbacks
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
+    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-    public class UserLoginTask extends AsyncTask<Void, Void,ArrayList<LogInBO> >{
-
+        private ProgressDialog pDialog;
         private final String mEmail;
         private final String mPassword;
 
@@ -323,57 +335,74 @@ public class activity_login extends AppCompatActivity implements LoaderCallbacks
             mEmail = email;
             mPassword = password;
         }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            pDialog = new ProgressDialog(activity_login.this);
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+
+        }
 
         @Override
-        protected ArrayList<LogInBO> doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
+            // TODO: attempt authentication against a network service.
 
             try {
                 // Simulate network access.
                 //Thread.sleep(2000);
-                getLoginData g=new getLoginData();
-               return  g.getDatafromApiStudent();
+                boolean flag = false;
+                ResponseBO ress = getDataFromApi();
+                ArrayList<Student> ll = ress.getStudentArrayList();
+
+                int i = 0;
+                String st = null;
+                for(Student o : ll) {
+                    st = o.Name+" "+o.Password+" "+o.Email+" "+o.RollNumber;
+                    abc = o.Name+" "+o.Password+" "+o.Email+" "+o.RollNumber;
+                    //Toast.makeText(getApplicationContext(),st,Toast.LENGTH_SHORT).show();
+                    abc += "here1";
+                    if(email.equals(o.Email) && password.equals(o.Password))
+                        return true;
+                    abc += "here22";
+                    abc = email+" "+password;
+                }
+                return false;
 
             } catch (Exception e) {
-                return null;
+                return false;
             }
 
-//            for (String credential : DUMMY_CREDENTIALS) {
-//                String[] pieces = credential.split(":");
-//                if (pieces[0].equals(mEmail)) {
-//                    // Account exists, return true if the password matches.
-//                    return pieces[1].equals(mPassword);
-//                }
-//            }
+            /*for (String credential : DUMMY_CREDENTIALS) {
+                String[] pieces = credential.split(":");
+                if (pieces[0].equals(mEmail)) {
+                    // Account exists, return true if the password matches.
+                    return pieces[1].equals(mPassword);
+                }
+            }*/
 
             // TODO: register the new account here.
-         //   return true;
-
-
+            //return true;
         }
 
-       // @Override
-        protected void onPostExecute(ArrayList<LogInBO> response) {
-            mAuthTask = null;
-            showProgress(false);
-            if(response!=null) {
-                for(int i=0;i<response.size();i++){
-                    if(response.get(i).email.equals(mEmail) && response.get(i).password.equals(mPassword)){
-                            Toast.makeText(getApplicationContext(),"Logedin",Toast.LENGTH_LONG).show();
-                        SharedPreferences sp=getSharedPreferences("Preferences",MODE_PRIVATE);
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            /*mAuthTask = null;
+            showProgress(false);*/
 
-                        SharedPreferences.Editor e=sp.edit();
-                        e.putString("userEmail",mEmail);
-                        e.putString("userPassword",mPassword);
-                    }
-                }
-            }
-
-         //   if (success) {
-         //       finish();
-         //   } else {
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+            if (success) {
+                Toast.makeText(getApplicationContext(),"successfull login",Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(),"unsuccessfull login",Toast.LENGTH_SHORT).show();
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
-          //  }
+            }
+            Toast.makeText(getApplicationContext(),abc,Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -382,73 +411,97 @@ public class activity_login extends AppCompatActivity implements LoaderCallbacks
             showProgress(false);
         }
     }
+    public ResponseBO getDataFromApi()
+    {
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        String JsonStr = null;
 
+        abc += "1";
+        ResponseBO res = new ResponseBO();
+        try {
+            abc += "2";
+            URL url = new URL("http://senseilocatorwebservices.apphb.com/api/Student");
+            urlConnection = (HttpURLConnection) url.openConnection();
+            abc += "3";
+            urlConnection.setRequestMethod("GET");
+            abc += "3.1";
+            urlConnection.connect();
+            abc += "4";
+            StringBuffer buffer = new StringBuffer();
+            abc += "5";
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            abc += "6";
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+                abc += "0"+line;
+            }
+            if (buffer.length() == 0) {
+                abc += "7";
+            }
+            else
+                abc += "8";
+            JsonStr = buffer.toString();
+            abc += "9";
+            res.setStudentArrayList(getDataFromJson(JsonStr));
+            abc += "10";
 
-    public class TeacherLoginTask extends AsyncTask<Void, Void,ArrayList<TeacherLogInBO> >{
+            return res;
+        } catch (IOException e) {
+            abc += "exception";
+            Log.e("Data not found", "Error ", e);
+            Toast.makeText(getApplicationContext(),"Data not found",Toast.LENGTH_SHORT).show();
 
-        private final String mEmail;
-        private final String mPassword;
-
-        TeacherLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        } finally{
+            abc += "a";
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+                abc += "b";
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                    abc += "c";
+                } catch (final IOException e) {
+                    Log.e("Placeholder", "Error closing stream", e);
+                    Toast.makeText(getApplicationContext(),"it is working",Toast.LENGTH_SHORT).show();
+                    abc += "d";
+                }
+                abc += "e";
+            }
+            abc += "f";
         }
-
-        @Override
-        protected ArrayList<TeacherLogInBO> doInBackground(Void... params) {
-
+        return null;
+    }
+    ArrayList<Student> getDataFromJson(String JsonStr)
+    {
+        ArrayList<Student> lst = new ArrayList<>();
+        Student obj = new Student();
+        //weather obj = new weather();
+        if(JsonStr != null){
             try {
-                // Simulate network access.
-                //Thread.sleep(2000);
-                return new getTeacherLoginData().getDatafromApiTeacher();
+                JSONArray res = new JSONArray(JsonStr);
+                for(int i = 0;i < res.length();i++){
+                    obj = new Student();
+                    JSONObject o=res.getJSONObject(i);
+                    obj.RollNumber =o.getString("RollNumber");
+                    obj.Name =o.getString("Name");
+                    obj.Email =o.getString("Email");
+                    obj.Password =o.getString("Password");
+                    lst.add(obj);
+                }
 
-            } catch (Exception e) {
+                return lst;
+
+
+            }catch (JSONException e) {
+                e.printStackTrace();
                 return null;
             }
-
-//            for (String credential : DUMMY_CREDENTIALS) {
-//                String[] pieces = credential.split(":");
-//                if (pieces[0].equals(mEmail)) {
-//                    // Account exists, return true if the password matches.
-//                    return pieces[1].equals(mPassword);
-//                }
-//            }
-
-            // TODO: register the new account here.
-            //   return true;
-
-
         }
 
-        // @Override
-        protected void onPostExecute(ArrayList<TeacherLogInBO> response) {
-            mAuthTask = null;
-            showProgress(false);
-            if(response!=null) {
-                for(int i=0;i<response.size();i++){
-                    if(response.get(i).email.equals(mEmail) && response.get(i).password.equals(mPassword)){
-                        Toast.makeText(getApplicationContext(),"Logedin",Toast.LENGTH_LONG).show();
-                        SharedPreferences sp=getSharedPreferences("Preferences",MODE_PRIVATE);
-                        SharedPreferences.Editor e=sp.edit();
-                        e.putString("userEmail",mEmail);
-                        e.putString("userPassword",mPassword);
-                    }
-                }
-            }
-
-            //   if (success) {
-            //       finish();
-            //   } else {
-            mPasswordView.setError(getString(R.string.error_incorrect_password));
-            mPasswordView.requestFocus();
-            //  }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
+        return lst;
     }
 }
 

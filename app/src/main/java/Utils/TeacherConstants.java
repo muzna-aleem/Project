@@ -1,4 +1,4 @@
-package com.lab42.maham.senseilocater.Utils;
+package Utils;
 
 public class TeacherConstants {
 

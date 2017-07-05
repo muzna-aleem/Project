@@ -1,4 +1,4 @@
-package com.lab42.maham.senseilocater.Model;
+package Model;
 
 import java.util.ArrayList;
 

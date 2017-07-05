@@ -69,4 +69,10 @@
 
 
     <string name="teacher_profile_check_notify">Notify</string>
+
+
+    <string name="tv_loc">Location : </string>
+    <string name="tv_maxt">Max Temp : </string>
+    <string name="tv_mint">Min Temp : </string>
+    <string name="title_activity_maps">Map</string>
 </resources>

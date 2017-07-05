@@ -2,11 +2,15 @@ package com.lab42.maham.senseilocater;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
+import android.view.View;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,10 +18,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.lab42.maham.senseilocater.MainNotificationFragment;
+import com.lab42.maham.senseilocater.R;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NotificationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    GPSTracker gpss;
+    int time = 5;
+    Timer t;
+    TimerTask task;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +64,85 @@ public class NotificationActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        Switch s = (Switch)findViewById(R.id.switch1);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+
+                    Log.i("chal" , "ra");
+                    Log.d("chal" , "ra");
+                    Log.e("chal" , "ra");
+
+                    /*Intent i = new Intent();
+                    i.setAction("MyBroadcast");
+                    i.putExtra("value",100);
+                    sendBroadcast(i);*/
+                    t = new Timer();
+                    task = new TimerTask() {
+
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+
+                                int i = 0;
+                                @Override
+                                public void run() {
+                                    if (time > 0) {
+                                        time -= 1;
+                                        i++;
+                                    }
+                                    else {
+
+
+
+                                        gpss = new GPSTracker(getApplicationContext());
+                                        double latitude = 0;
+                                        double longitude = 0;
+                                        // check if GPS enabled
+                                        if(gpss.canGetLocation()) {
+
+                                            latitude = gpss.getLatitude();
+                                            longitude = gpss.getLongitude();
+                                        }
+                                       // Toast.makeText(getApplicationContext(), latitude+"  "+longitude+" ", Toast.LENGTH_SHORT).show();
+                                        Log.d("lat" , latitude+"");
+                                        Log.d("long" , longitude+"");
+
+                                        Log.i("lat" , latitude+"");
+                                        Log.i("long" , longitude+"");
+
+                                        Log.e("lat" , latitude+"");
+                                        Log.e("long" , longitude+"");
+
+                            /*mMap.addMarker(new MarkerOptions()
+                                    .position(gps)
+                                    .title("Current Location"));*/
+
+
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    t.scheduleAtFixedRate(task, 0, 1000);
+                }
+                /*else{
+                    Intent i = new Intent();
+                    i.setAction("MyBroadcast2");
+                    sendBroadcast(i);
+                }*/
+
+            }
+        });
+
         Fragment f = new MainNotificationFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.content_notification,f);
         ft.commit();
 
     }
+
 
     @Override
     public void onBackPressed() {
@@ -111,11 +204,6 @@ public class NotificationActivity extends AppCompatActivity
        }
 
         else if(id == R.id.nav_logout){
-            SharedPreferences sp=getSharedPreferences("Preferences",MODE_PRIVATE);
-            SharedPreferences.Editor e=sp.edit();
-            e.putString("userEmail",null);
-            e.putString("userPassword",null);
-
             Intent i = new Intent(getApplicationContext(),activity_login.class);
             i.putExtra("key",1);
             startActivity(i);

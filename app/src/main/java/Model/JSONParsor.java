@@ -1,8 +1,8 @@
-package com.lab42.maham.senseilocater.Model;
+package Model;
 
 import android.util.Log;
 
-import com.lab42.maham.senseilocater.Utils.TeacherConstants;
+import Utils.TeacherConstants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
