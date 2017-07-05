@@ -2,13 +2,11 @@ package com.lab42.maham.senseilocater;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,10 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import com.lab42.maham.senseilocater.MainNotificationFragment;
-import com.lab42.maham.senseilocater.R;
 
 public class NotificationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -117,6 +111,11 @@ public class NotificationActivity extends AppCompatActivity
        }
 
         else if(id == R.id.nav_logout){
+            SharedPreferences sp=getSharedPreferences("Preferences",MODE_PRIVATE);
+            SharedPreferences.Editor e=sp.edit();
+            e.putString("userEmail",null);
+            e.putString("userPassword",null);
+
             Intent i = new Intent(getApplicationContext(),activity_login.class);
             i.putExtra("key",1);
             startActivity(i);

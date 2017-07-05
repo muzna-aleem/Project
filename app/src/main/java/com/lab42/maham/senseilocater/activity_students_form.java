@@ -1,25 +1,16 @@
 package com.lab42.maham.senseilocater;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.Build;
-import android.provider.ContactsContract;
-import android.support.annotation.StringRes;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public class activity_students_form extends AppCompatActivity {
 
-    //EditText t1,t2,t3,t4,t5,t6;
+    EditText t1,t2,t3,t4,t5,t6;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,15 +18,22 @@ public class activity_students_form extends AppCompatActivity {
 
         Button bu = (Button)findViewById(R.id.btn_std_profile_signup);
 
-//        t1 = (EditText)findViewById(R.id.et_std_profile_fname);
-//        t2 = (EditText)findViewById(R.id.et_std_profile_lname);
-//        t3 = (EditText)findViewById(R.id.et_std_profile_rollNo);
-//        t4 = (EditText)findViewById(R.id.et_std_profile_email);
-//        t5 = (EditText)findViewById(R.id.et_std_profile_password);
-//        t6 = (EditText)findViewById(R.id.et_std_profile_password_reEnter);
+        t1 = (EditText)findViewById(R.id.et_std_profile_fname);
+        t2 = (EditText)findViewById(R.id.et_std_profile_lname);
+        t3 = (EditText)findViewById(R.id.et_std_profile_rollNo);
+        t4 = (EditText)findViewById(R.id.et_std_profile_email);
+        t5 = (EditText)findViewById(R.id.et_std_profile_password);
+        t6 = (EditText)findViewById(R.id.et_std_profile_password_reEnter);
         bu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences sp=getSharedPreferences("Preferences",MODE_PRIVATE);
+                SharedPreferences.Editor e=sp.edit();
+                e.putString("user","student");
+                e.putString("userName",t1.getText().toString());
+                e.putString("userEmail",t4.getText().toString());
+                e.putString("userPassword",t5.getText().toString());
+                e.commit();
                 Intent intent = new Intent(getApplicationContext(),TeachersListActivity.class);
                 startActivity(intent);
             }

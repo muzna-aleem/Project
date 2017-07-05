@@ -1,11 +1,10 @@
 package com.lab42.maham.senseilocater;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 public class activity_signup_menu extends AppCompatActivity {
 
@@ -20,6 +19,7 @@ public class activity_signup_menu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),activity_students_form.class);
+                //intent.putExtra("user","student");
                 startActivity(intent);
             }
         });
